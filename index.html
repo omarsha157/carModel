@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GE Photo capture</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <img class="bg" src="./assets/3d-geometric-abstract-background_1048-13010.jpg" alt="">
+
+    <div class="menu-modal hide">
+        <div class="menu-modal-content">
+            <div class="modal-header">
+                <p>CHOOSE CAR TYPE</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="nav">
+            <img class="logo" src="./assets/GE Logo_Horizontal Version white.png" alt="">
+
+            <div class="sides-tabs">
+                <div class="tab selected-tab">
+                    <div class="status-dot active-dot"></div>
+                    <p>FRONT</p>
+                </div>
+                <div class="tab">
+                    <div class="status-dot"></div>
+                    <p>RIGHT</p>
+                </div>
+                <div class="tab">
+                    <div class="status-dot"></div>
+                    <p>REAR</p>
+                </div>
+                <div class="tab">
+                    <div class="status-dot"></div>
+                    <p>LEFT</p>
+                </div>
+            </div>
+
+            <img class="menu" src="./assets/noun-menu-7164612 white.png" alt="">
+        </div>
+
+        <div class="main-content">
+            <div class="viewport">
+                <video id="videoElement" autoplay playsinline></video>
+                <canvas id="captureCanvas"></canvas>
+                <div id="container"></div>
+                <img id="capturedImage" alt="Captured Image">
+            </div>
+
+            <div class="camera-controls">
+                <img class="retake" src="./assets/noun-recapture-3122582 white.png" alt="">
+                <img class="shutter" src="./assets/noun-aperture-6236064 white.png" alt="">
+                <img class="submit" src="./assets/noun-upload-photo-5313902 white.png" alt="">
+            </div>
+        </div>
+
+    </div>
+
+    <script src="./three.min.js"></script>
+    <script src="./OrbitControls.js"></script>
+    <script src="./GLTFLoader.js"></script>
+    <script src="./app.js"></script>
+</body>
+</html>
