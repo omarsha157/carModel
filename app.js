@@ -112,12 +112,12 @@ loader.load('./assets/generic_sedan_car.glb', (gltf) => {
     scene.add(carModel);
     
     // Set the initial position of the car model
-    carModel.position.set(0, -1.2, 0);
+    carModel.position.set(0, -0.7, 0);
 
     // Calculate the initial scale based on the viewport width
     updateCarScale();
 
-    camera.position.set(0, 0, -3.5);
+    camera.position.set(0, 0, -2.8);
     camera.lookAt(carModel.position);
 }, undefined, (error) => {
     console.error('An error occurred while loading the model:', error);
