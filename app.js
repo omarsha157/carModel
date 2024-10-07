@@ -143,7 +143,7 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-animate();
+// animate();
 
 // Handle window resizing
 function updateRendererSize() {
