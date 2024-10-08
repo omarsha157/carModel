@@ -2,8 +2,88 @@ const tabs = document.querySelectorAll('.tab');
 const menu = document.querySelector('.menu');
 const menuModal = document.querySelector('.menu-modal');
 const menuClose = document.querySelector('.close-modal');
+const cards = document.querySelectorAll('.card');
 
-// ? tabs logic
+// Model mapping for sedan and SUV
+const modelMap = {
+    sedan: {
+        modelName: 'sedan',
+        modelPath: './assets/sedan.glb',
+        modelRotation: Math.PI // 180 degrees for the sedan
+    },
+    suv: {
+        modelName: 'suv',
+        modelPath: './assets/suv.glb',
+        modelRotation: 0 // No rotation for the SUV
+    }
+};
+
+// Event listener for each card to load the respective model
+cards.forEach(card => {
+    card.addEventListener('click', () => {
+        const selectedModel = card.dataset.modelName;
+        console.log(`Selected car model: ${selectedModel}`);
+        loadCarModel(modelMap[selectedModel].modelPath);
+
+        cards.forEach(card => {
+            card.classList.remove('active')
+        })
+        card.classList.add('active')
+
+        menuModal.classList.toggle('hide');
+    });
+});
+
+// Function to load and replace car model in the scene
+// Function to load and replace car model in the scene
+function loadCarModel(modelPath) {
+    // Remove the current car model from the scene if it exists
+    if (carModel) {
+        scene.remove(carModel);
+    }
+
+    // Load the new model from the given path
+    loader.load(modelPath, (gltf) => {
+        carModel = gltf.scene;
+        scene.add(carModel);
+
+        // Reset position and scale
+        carModel.position.set(0, 0, 0);
+
+        // Retrieve the model rotation from modelMap based on modelPath
+        const selectedModel = Object.values(modelMap).find(model => model.modelPath === modelPath);
+        if (selectedModel && selectedModel.modelRotation !== undefined) {
+            carModel.rotation.y = selectedModel.modelRotation; // Apply the rotation from the model map
+        }
+
+        // Update scale based on viewport
+        updateCarScale();
+
+        // Compute the bounding box and center the model
+        const boundingBox = new THREE.Box3().setFromObject(carModel);
+        const center = boundingBox.getCenter(new THREE.Vector3());
+        carModel.position.sub(center); // Move the model to the center
+
+        // Calculate the size of the bounding box (model size)
+        const size = boundingBox.getSize(new THREE.Vector3());
+        const maxDimension = Math.max(size.x, size.y, size.z);
+
+        // Set the camera distance proportional to the model's size
+        const cameraDistance = maxDimension * 2; // Adjust the factor if needed
+        camera.position.set(0, cameraDistance / 2, cameraDistance); // Offset camera up and back
+
+        // Ensure the camera looks at the center of the model
+        camera.lookAt(carModel.position);
+
+        console.log(`Loaded model from: ${modelPath}`);
+    }, undefined, (error) => {
+        console.error('An error occurred while loading the model:', error);
+    });
+}
+
+
+
+// Tabs logic
 tabs.forEach(tab => {
     tab.addEventListener('click', () => {
         tabs.forEach(tab => {
@@ -42,7 +122,6 @@ function startVideoStream() {
             videoElement.srcObject = stream;
         }).catch((error) => {
             console.error('Error accessing camera:', error);
-            // Attempt to access the rear camera as a fallback
         });
     });
 }
@@ -83,7 +162,7 @@ document.querySelector('.retake').addEventListener('click', () => {
     startVideoStream(); // Restart the video feed
 });
 
-// ? model
+// 3D Model setup using THREE.js
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -91,7 +170,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.domElement.style.position = 'absolute';
 renderer.domElement.style.top = '0';
 renderer.domElement.style.left = '0';
-renderer.domElement.style.opacity = 0.5;
+renderer.domElement.style.opacity = 1;
 
 document.getElementById('container').appendChild(renderer.domElement);
 
@@ -104,24 +183,12 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 7.5);
 scene.add(directionalLight);
 
-// Load car model
+// Load car model using the function
 let carModel;
 const loader = new THREE.GLTFLoader();
-loader.load('./assets/generic_sedan_car.glb', (gltf) => {
-    carModel = gltf.scene;
-    scene.add(carModel);
-    
-    // Set the initial position of the car model
-    carModel.position.set(0, -0.7, 0);
 
-    // Calculate the initial scale based on the viewport width
-    updateCarScale();
-
-    camera.position.set(0, 0, -2.8);
-    camera.lookAt(carModel.position);
-}, undefined, (error) => {
-    console.error('An error occurred while loading the model:', error);
-});
+// Load the default car model (SUV in this case)
+loadCarModel('./assets/sedan.glb');
 
 // Scale the car model based on the viewport width
 function updateCarScale() {
@@ -130,7 +197,6 @@ function updateCarScale() {
         const scaleFactor = viewportWidth / 1500; // Adjust this factor as needed
         carModel.scale.set(scaleFactor, scaleFactor, scaleFactor);
 
-        // Log updated scale
         console.log(`Updated car model scale: ${carModel.scale.x}`);
     }
 }
