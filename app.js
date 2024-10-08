@@ -4,6 +4,13 @@ const menuModal = document.querySelector('.menu-modal');
 const menuClose = document.querySelector('.close-modal');
 const cards = document.querySelectorAll('.card');
 
+let activeTab = 'front'
+
+let frontImg = ''
+let rightImg = ''
+let rearImg = ''
+let leftImg = ''
+
 // Model mapping for sedan and SUV
 const modelMap = {
     sedan: {
@@ -17,6 +24,46 @@ const modelMap = {
         modelRotation: 0 // No rotation for the SUV
     }
 };
+
+
+// Tabs logic
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        activeTab = tab.dataset.activeTab
+
+        if (activeTab == 'front' && frontImg != '') {
+            document.getElementById('capturedImage').src = frontImg
+            document.getElementById('capturedImage').style.display = 'block';
+            document.getElementById('container').style.display = 'none';
+            videoStream.getTracks().forEach(track => track.stop());
+        } else if (activeTab == 'right' && rightImg != '') {
+            document.getElementById('capturedImage').src = rightImg
+            document.getElementById('capturedImage').style.display = 'block';
+            document.getElementById('container').style.display = 'none';
+            videoStream.getTracks().forEach(track => track.stop());
+        } else if (activeTab == 'rear' && rearImg != '') {
+            document.getElementById('capturedImage').src = rearImg
+            document.getElementById('capturedImage').style.display = 'block';
+            document.getElementById('container').style.display = 'none';
+            videoStream.getTracks().forEach(track => track.stop());
+        } else if (activeTab == 'left' && leftImg != '') {
+            document.getElementById('capturedImage').src = leftImg
+            document.getElementById('capturedImage').style.display = 'block';
+            document.getElementById('container').style.display = 'none';
+            videoStream.getTracks().forEach(track => track.stop());
+        }
+
+
+        tabs.forEach(tab => {
+            tab.classList.remove('selected-tab');
+        });
+        tab.classList.add('selected-tab');
+    });
+});
+
+menu.addEventListener('click', () => {
+    menuModal.classList.toggle('hide');
+});
 
 // Event listener for each card to load the respective model
 cards.forEach(card => {
@@ -69,7 +116,7 @@ function loadCarModel(modelPath) {
         const maxDimension = Math.max(size.x, size.y, size.z);
 
         // Set the camera distance proportional to the model's size
-        const cameraDistance = maxDimension * 2; // Adjust the factor if needed
+        const cameraDistance = maxDimension * 1; // Adjust the factor if needed
         camera.position.set(0, cameraDistance / 2, cameraDistance); // Offset camera up and back
 
         // Ensure the camera looks at the center of the model
@@ -83,19 +130,7 @@ function loadCarModel(modelPath) {
 
 
 
-// Tabs logic
-tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        tabs.forEach(tab => {
-            tab.classList.remove('selected-tab');
-        });
-        tab.classList.add('selected-tab');
-    });
-});
 
-menu.addEventListener('click', () => {
-    menuModal.classList.toggle('hide');
-});
 
 // Access camera feed
 const videoElement = document.getElementById('videoElement');
@@ -131,12 +166,25 @@ startVideoStream();
 
 // Capture the image when the button is clicked
 document.querySelector('.shutter').addEventListener('click', () => {
+
     captureCanvas.width = videoElement.videoWidth;
     captureCanvas.height = videoElement.videoHeight;
     captureContext.drawImage(videoElement, 0, 0, captureCanvas.width, captureCanvas.height);
     capturedImage = captureCanvas.toDataURL('image/png'); // Save image as variable
+    // Show the captured image
+
+    if (activeTab == 'front') {
+        frontImg = capturedImage
+    } else if (activeTab == 'right') {
+        rightImg = capturedImage
+    } else if (activeTab == 'rear') {
+        rearImg = capturedImage
+    } else if (activeTab == 'left') {
+        leftImg = capturedImage
+    }
+
     document.getElementById('capturedImage').src = capturedImage; // Set the image source to the captured image
-    document.getElementById('capturedImage').style.display = 'block'; // Show the captured image
+    document.getElementById('capturedImage').style.display = 'block';
 
     // Hide model and stop video feed
     document.getElementById('container').style.display = 'none'; // Hide 3D model
@@ -152,6 +200,15 @@ document.querySelector('.retake').addEventListener('click', () => {
     // Clear the canvas
     captureContext.clearRect(0, 0, captureCanvas.width, captureCanvas.height);
 
+    if (activeTab == 'front') {
+        frontImg = ''
+    } else if (activeTab == 'right') {
+        rightImg = ''
+    } else if (activeTab == 'rear') {
+        rearImg = ''
+    } else if (activeTab == 'left') {
+        leftImg = ''
+    }
     // Show 3D model again
     document.getElementById('container').style.display = 'flex'; // Show 3D model
 
@@ -194,7 +251,7 @@ loadCarModel('./assets/sedan.glb');
 function updateCarScale() {
     if (carModel) {
         const viewportWidth = window.innerWidth;
-        const scaleFactor = viewportWidth / 1500; // Adjust this factor as needed
+        const scaleFactor = viewportWidth / 10000; // Adjust this factor as needed
         carModel.scale.set(scaleFactor, scaleFactor, scaleFactor);
 
         console.log(`Updated car model scale: ${carModel.scale.x}`);
@@ -222,7 +279,7 @@ animate();
 
 // Handle window resizing
 function updateRendererSize() {
-    const container = document.querySelector('.viewport');
+    const container = document.querySelector('video');
     const width = container.clientWidth;
     const height = container.clientHeight;
 
