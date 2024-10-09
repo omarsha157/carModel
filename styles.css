@@ -21,6 +21,41 @@ body {
     filter: brightness(0.2);
 }
 
+/*? landscape modal  */
+
+.landscape-modal {
+    background-color: #313131;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 999;
+}
+
+.landscape-modal .modal {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.landscape-modal .modal p {
+    font-size: 1.2rem;
+    color: white;
+}
+
+.landscape-modal .modal img {
+    width: 250px;
+}
+
+.landscape-modal {
+    display: none;
+}
+
+
 /* ? menu modal */
 
 .menu-modal {

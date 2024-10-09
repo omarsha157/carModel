@@ -4,6 +4,9 @@ const menuModal = document.querySelector('.menu-modal');
 const menuClose = document.querySelector('.close-modal');
 const cards = document.querySelectorAll('.card');
 
+let landscapePrompt = document.querySelector('.landscape-modal');
+let mainWrapper = document.querySelector('.main-wrapper');
+
 let activeTab = 'front'
 
 let frontImg = ''
@@ -293,3 +296,22 @@ function updateRendererSize() {
 
 window.addEventListener('resize', updateRendererSize);
 updateRendererSize();
+
+
+
+
+// ? for landscape prompt
+screenSize();
+function screenSize() {
+    let screenHeight = window.innerHeight;
+    let screenWidth = window.innerWidth;
+
+    if (screenHeight > screenWidth) {
+        landscapePrompt.style.display = 'block';
+        mainWrapper.style.display = 'none';
+    } else {
+        landscapePrompt.style.display = 'none';
+        mainWrapper.style.display = 'block';
+    }
+}
+window.addEventListener('resize', () => screenSize())
