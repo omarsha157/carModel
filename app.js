@@ -72,7 +72,7 @@ menu.addEventListener('click', () => {
 cards.forEach(card => {
     card.addEventListener('click', () => {
         const selectedModel = card.dataset.modelName;
-        console.log(`Selected car model: ${selectedModel}`);
+
         loadCarModel(modelMap[selectedModel].modelPath);
 
         cards.forEach(card => {
@@ -125,7 +125,6 @@ function loadCarModel(modelPath) {
         // Ensure the camera looks at the center of the model
         camera.lookAt(carModel.position);
 
-        console.log(`Loaded model from: ${modelPath}`);
     }, undefined, (error) => {
         console.error('An error occurred while loading the model:', error);
     });
@@ -257,7 +256,7 @@ function updateCarScale() {
         const scaleFactor = viewportWidth / 10000; // Adjust this factor as needed
         carModel.scale.set(scaleFactor, scaleFactor, scaleFactor);
 
-        console.log(`Updated car model scale: ${carModel.scale.x}`);
+        // console.log(`Updated car model scale: ${carModel.scale.x}`);
     }
 }
 
