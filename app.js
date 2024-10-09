@@ -227,7 +227,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.domElement.style.position = 'absolute';
 renderer.domElement.style.top = '0';
 renderer.domElement.style.left = '0';
-renderer.domElement.style.opacity = 1;
+renderer.domElement.style.opacity = 0.5;
 
 document.getElementById('container').appendChild(renderer.domElement);
 
