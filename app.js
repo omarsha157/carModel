@@ -29,40 +29,7 @@ const modelMap = {
 };
 
 
-// Tabs logic
-tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        activeTab = tab.dataset.activeTab
 
-        if (activeTab == 'front' && frontImg != '') {
-            document.getElementById('capturedImage').src = frontImg
-            document.getElementById('capturedImage').style.display = 'block';
-            document.getElementById('container').style.display = 'none';
-            videoStream.getTracks().forEach(track => track.stop());
-        } else if (activeTab == 'right' && rightImg != '') {
-            document.getElementById('capturedImage').src = rightImg
-            document.getElementById('capturedImage').style.display = 'block';
-            document.getElementById('container').style.display = 'none';
-            videoStream.getTracks().forEach(track => track.stop());
-        } else if (activeTab == 'rear' && rearImg != '') {
-            document.getElementById('capturedImage').src = rearImg
-            document.getElementById('capturedImage').style.display = 'block';
-            document.getElementById('container').style.display = 'none';
-            videoStream.getTracks().forEach(track => track.stop());
-        } else if (activeTab == 'left' && leftImg != '') {
-            document.getElementById('capturedImage').src = leftImg
-            document.getElementById('capturedImage').style.display = 'block';
-            document.getElementById('container').style.display = 'none';
-            videoStream.getTracks().forEach(track => track.stop());
-        }
-
-
-        tabs.forEach(tab => {
-            tab.classList.remove('selected-tab');
-        });
-        tab.classList.add('selected-tab');
-    });
-});
 
 menu.addEventListener('click', () => {
     menuModal.classList.toggle('hide');
@@ -177,12 +144,16 @@ document.querySelector('.shutter').addEventListener('click', () => {
 
     if (activeTab == 'front') {
         frontImg = capturedImage
+        document.querySelector('.selected-tab .status-dot').classList.add('active-dot')
     } else if (activeTab == 'right') {
         rightImg = capturedImage
+        document.querySelector('.selected-tab .status-dot').classList.add('active-dot')
     } else if (activeTab == 'rear') {
         rearImg = capturedImage
+        document.querySelector('.selected-tab .status-dot').classList.add('active-dot')
     } else if (activeTab == 'left') {
         leftImg = capturedImage
+        document.querySelector('.selected-tab .status-dot').classList.add('active-dot')
     }
 
     document.getElementById('capturedImage').src = capturedImage; // Set the image source to the captured image
@@ -195,6 +166,24 @@ document.querySelector('.shutter').addEventListener('click', () => {
 
 // Reset functionality
 document.querySelector('.retake').addEventListener('click', () => {
+    if (activeTab == 'front') {
+        frontImg = ''
+        document.querySelector('.selected-tab .status-dot').classList.remove('active-dot')
+    } else if (activeTab == 'right') {
+        rightImg = ''
+        document.querySelector('.selected-tab .status-dot').classList.remove('active-dot')
+    } else if (activeTab == 'rear') {
+        rearImg = ''
+        document.querySelector('.selected-tab .status-dot').classList.remove('active-dot')
+    } else if (activeTab == 'left') {
+        leftImg = ''
+        document.querySelector('.selected-tab .status-dot').classList.remove('active-dot')
+    }
+
+    retake()
+});
+
+function retake() {
     // Reset captured image and hide it
     document.getElementById('capturedImage').src = ''; // Clear the image source
     document.getElementById('capturedImage').style.display = 'none'; // Hide captured image
@@ -202,15 +191,7 @@ document.querySelector('.retake').addEventListener('click', () => {
     // Clear the canvas
     captureContext.clearRect(0, 0, captureCanvas.width, captureCanvas.height);
 
-    if (activeTab == 'front') {
-        frontImg = ''
-    } else if (activeTab == 'right') {
-        rightImg = ''
-    } else if (activeTab == 'rear') {
-        rearImg = ''
-    } else if (activeTab == 'left') {
-        leftImg = ''
-    }
+    
     // Show 3D model again
     document.getElementById('container').style.display = 'flex'; // Show 3D model
 
@@ -219,7 +200,7 @@ document.querySelector('.retake').addEventListener('click', () => {
         videoStream.getTracks().forEach(track => track.stop()); // Stop any existing stream
     }
     startVideoStream(); // Restart the video feed
-});
+}
 
 // 3D Model setup using THREE.js
 const scene = new THREE.Scene();
@@ -314,3 +295,50 @@ function screenSize() {
     }
 }
 window.addEventListener('resize', () => screenSize())
+
+
+
+// Tabs logic
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        activeTab = tab.dataset.activeTab
+
+        if (activeTab == 'front' && frontImg !== '') {
+            document.getElementById('capturedImage').src = frontImg
+            document.getElementById('capturedImage').style.display = 'block';
+            document.getElementById('container').style.display = 'none';
+            videoStream.getTracks().forEach(track => track.stop());
+        } else if (activeTab == 'right' && rightImg !== '') {
+            document.getElementById('capturedImage').src = rightImg
+            document.getElementById('capturedImage').style.display = 'block';
+            document.getElementById('container').style.display = 'none';
+            videoStream.getTracks().forEach(track => track.stop());
+        } else if (activeTab == 'rear' && rearImg !== '') {
+            document.getElementById('capturedImage').src = rearImg
+            document.getElementById('capturedImage').style.display = 'block';
+            document.getElementById('container').style.display = 'none';
+            videoStream.getTracks().forEach(track => track.stop());
+        } else if (activeTab == 'left' && leftImg !== '') {
+            document.getElementById('capturedImage').src = leftImg
+            document.getElementById('capturedImage').style.display = 'block';
+            document.getElementById('container').style.display = 'none';
+            videoStream.getTracks().forEach(track => track.stop());
+        }
+
+        if (activeTab == 'front' && frontImg == '') {
+            retake()
+        } else if (activeTab == 'right' && rightImg == '') {
+            retake()
+        } else if (activeTab == 'rear' && rearImg == '') {
+            retake()
+        } else if (activeTab == 'left' && leftImg == '') {
+            retake()
+        }
+
+
+        tabs.forEach(tab => {
+            tab.classList.remove('selected-tab');
+        });
+        tab.classList.add('selected-tab');
+    });
+});
