@@ -246,7 +246,7 @@ function retake() {
     // Clear the canvas
     captureContext.clearRect(0, 0, captureCanvas.width, captureCanvas.height);
 
-    
+
     // Show 3D model again
     document.getElementById('container').style.display = 'flex'; // Show 3D model
 
@@ -282,8 +282,7 @@ scene.add(directionalLight);
 let carModel;
 const loader = new THREE.GLTFLoader();
 
-// Load the default car model (SUV in this case)
-loadCarModel('./assets/sedan.glb');
+
 
 // Scale the car model based on the viewport width
 function updateCarScale() {
@@ -345,6 +344,9 @@ function screenSize() {
         landscapePrompt.style.display = 'block';
         mainWrapper.style.display = 'none';
     } else {
+        // Load the default car model (SUV in this case)
+        loadCarModel('./assets/sedan.glb');
+
         landscapePrompt.style.display = 'none';
         mainWrapper.style.display = 'block';
     }
