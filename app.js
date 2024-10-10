@@ -53,7 +53,56 @@ cards.forEach(card => {
 
 // Function to load and replace car model in the scene
 // Function to load and replace car model in the scene
+// function loadCarModel(modelPath) {
+//     // Remove the current car model from the scene if it exists
+//     if (carModel) {
+//         scene.remove(carModel);
+//     }
+
+//     // Load the new model from the given path
+//     loader.load(modelPath, (gltf) => {
+//         carModel = gltf.scene;
+//         scene.add(carModel);
+
+//         // Reset position and scale
+//         carModel.position.set(0, 0, 0);
+
+//         // Retrieve the model rotation from modelMap based on modelPath
+//         const selectedModel = Object.values(modelMap).find(model => model.modelPath === modelPath);
+//         if (selectedModel && selectedModel.modelRotation !== undefined) {
+//             carModel.rotation.y = selectedModel.modelRotation; // Apply the rotation from the model map
+//         }
+
+//         // Update scale based on viewport
+//         updateCarScale();
+
+//         // Compute the bounding box and center the model
+//         const boundingBox = new THREE.Box3().setFromObject(carModel);
+//         const center = boundingBox.getCenter(new THREE.Vector3());
+//         carModel.position.sub(center); // Move the model to the center
+
+//         // Calculate the size of the bounding box (model size)
+//         const size = boundingBox.getSize(new THREE.Vector3());
+//         const maxDimension = Math.max(size.x, size.y, size.z);
+
+//         // Set the camera distance proportional to the model's size
+//         const cameraDistance = maxDimension * 1; // Adjust the factor if needed
+//         camera.position.set(0, cameraDistance / 2, cameraDistance); // Offset camera up and back
+
+//         // Ensure the camera looks at the center of the model
+//         camera.lookAt(carModel.position);
+
+//     }, undefined, (error) => {
+//         console.error('An error occurred while loading the model:', error);
+//     });
+// }
+
 function loadCarModel(modelPath) {
+    const loadingSpinner = document.querySelector('.loading-spinner');
+
+    // Show loading spinner
+    loadingSpinner.classList.remove('hide');
+
     // Remove the current car model from the scene if it exists
     if (carModel) {
         scene.remove(carModel);
@@ -92,8 +141,14 @@ function loadCarModel(modelPath) {
         // Ensure the camera looks at the center of the model
         camera.lookAt(carModel.position);
 
+        // Hide loading spinner after the model is fully loaded
+        loadingSpinner.classList.add('hide');
+
     }, undefined, (error) => {
         console.error('An error occurred while loading the model:', error);
+
+        // Hide loading spinner even if there's an error
+        loadingSpinner.classList.add('hide');
     });
 }
 
