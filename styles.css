@@ -133,6 +133,7 @@ body {
 }
 
 .nav {
+    height: 10vh;
     margin-top: 10px;
     padding: 0 1rem;
     display: flex;
@@ -209,7 +210,7 @@ body {
 
 .viewport {
     border-radius: 8px;
-    height: 90vh;
+    height: 80vh;
     width: 100%;
     background-color: black;
 
