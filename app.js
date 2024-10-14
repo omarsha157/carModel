@@ -356,7 +356,7 @@ function screenSize() {
 }
 
 window.addEventListener('resize', () => {
-    // location.reload();
+    location.reload();
     screenSize();
 
     renderer.render(scene, camera);  // Ensure it renders properly after resizing
