@@ -7,6 +7,10 @@ const cards = document.querySelectorAll('.card');
 let landscapePrompt = document.querySelector('.landscape-modal');
 let mainWrapper = document.querySelector('.main-wrapper');
 
+let shutterModal = document.querySelector('.shutter-modal')
+let shutterModalClose = document.querySelector('.shutter-modal img')
+
+let didModelMove = false
 
 let cameraWidth = 0;  
 let cameraHeight = 0; 
@@ -33,7 +37,9 @@ const modelMap = {
 };
 
 
-
+shutterModalClose.addEventListener('click', () => {
+    shutterModal.style.display = 'none'
+})
 
 menu.addEventListener('click', () => {
     menuModal.classList.toggle('hide');
@@ -110,6 +116,11 @@ startVideoStream();
 // Capture the image when the button is clicked
 document.querySelector('.shutter').addEventListener('click', () => {
 
+    if (didModelMove) {
+        shutterModal.style.display = 'grid'
+        return
+    }
+
     captureCanvas.width = videoElement.videoWidth;
     captureCanvas.height = videoElement.videoHeight;
     captureContext.drawImage(videoElement, 0, 0, captureCanvas.width, captureCanvas.height);
@@ -140,6 +151,11 @@ document.querySelector('.shutter').addEventListener('click', () => {
 
 // Reset functionality
 document.querySelector('.retake').addEventListener('click', () => {
+    if (didModelMove) {
+        shutterModal.style.display = 'grid'
+        return
+    }
+
     if (activeTab == 'front') {
         frontImg = ''
         document.querySelector('.selected-tab .status-dot').classList.remove('active-dot')
@@ -380,23 +396,28 @@ function centerCarModel() {
 tabs.forEach(tab => {
     tab.addEventListener('click', () => {
         activeTab = tab.dataset.activeTab
+        didModelMove = false
 
         if (activeTab == 'front' && frontImg !== '') {
+            faceCarFront()
             document.getElementById('capturedImage').src = frontImg
             document.getElementById('capturedImage').style.display = 'block';
             document.getElementById('container').style.display = 'none';
             videoStream.getTracks().forEach(track => track.stop());
         } else if (activeTab == 'right' && rightImg !== '') {
+            faceCarRight()
             document.getElementById('capturedImage').src = rightImg
             document.getElementById('capturedImage').style.display = 'block';
             document.getElementById('container').style.display = 'none';
             videoStream.getTracks().forEach(track => track.stop());
         } else if (activeTab == 'rear' && rearImg !== '') {
+            faceCarRear()
             document.getElementById('capturedImage').src = rearImg
             document.getElementById('capturedImage').style.display = 'block';
             document.getElementById('container').style.display = 'none';
             videoStream.getTracks().forEach(track => track.stop());
         } else if (activeTab == 'left' && leftImg !== '') {
+            faceCarLeft()
             document.getElementById('capturedImage').src = leftImg
             document.getElementById('capturedImage').style.display = 'block';
             document.getElementById('container').style.display = 'none';
@@ -426,3 +447,7 @@ tabs.forEach(tab => {
 });
 
 
+renderer.domElement.addEventListener('pointermove', () => {
+    didModelMove = true
+
+});
