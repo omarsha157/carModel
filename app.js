@@ -1,3 +1,6 @@
+// Global variable to store the initial rotation of the loaded model
+let initialModelRotation = 0;
+
 const tabs = document.querySelectorAll('.tab');
 const menu = document.querySelector('.menu');
 const menuModal = document.querySelector('.menu-modal');
@@ -12,8 +15,8 @@ let shutterModalClose = document.querySelector('.shutter-modal img')
 
 let didModelMove = false
 
-let cameraWidth = 0;  
-let cameraHeight = 0; 
+let cameraWidth = 0;
+let cameraHeight = 0;
 
 let activeTab = 'front'
 
@@ -194,55 +197,9 @@ function retake() {
 
 
 
-// Global variable to store the initial rotation of the loaded model
-let initialModelRotation = 0;
 
-// Modify loadCarModel to store the model's initial rotation
-function loadCarModel(modelPath) {
-    const loadingSpinner = document.querySelector('.loading-spinner');
 
-    // Show loading spinner
-    loadingSpinner.classList.remove('hide');
 
-    // Remove the current car model from the scene if it exists
-    if (carModel) {
-        scene.remove(carModel);
-    }
-
-    // Load the new model from the given path
-    loader.load(modelPath, (gltf) => {
-        carModel = gltf.scene;
-        scene.add(carModel);
-
-        // Reset position and scale
-        carModel.position.set(0, 0, 0);
-
-        // Retrieve the model rotation from modelMap based on modelPath
-        const selectedModel = Object.values(modelMap).find(model => model.modelPath === modelPath);
-        if (selectedModel && selectedModel.modelRotation !== undefined) {
-            initialModelRotation = selectedModel.modelRotation; // Store the initial rotation
-            carModel.rotation.y = initialModelRotation; // Set the initial rotation
-        }
-
-        // Center and reset the model
-        const boundingBox = new THREE.Box3().setFromObject(carModel);
-        const center = boundingBox.getCenter(new THREE.Vector3());
-        carModel.position.sub(center);
-
-        const size = boundingBox.getSize(new THREE.Vector3());
-        const maxDimension = Math.max(size.x, size.y, size.z);
-
-        const cameraDistance = maxDimension * 0.7;
-        camera.position.set(0, cameraDistance / 2, cameraDistance);
-        camera.lookAt(center);
-
-        // Hide loading spinner
-        loadingSpinner.classList.add('hide');
-    }, undefined, (error) => {
-        console.error('An error occurred while loading the model:', error);
-        loadingSpinner.classList.add('hide');
-    });
-}
 
 
 
@@ -286,6 +243,66 @@ controls.enableZoom = false;
 controls.enablePan = false;
 controls.enableRotate = true;
 
+
+// Modify loadCarModel to store the model's initial rotation
+function loadCarModel(modelPath) {
+    const loadingSpinner = document.querySelector('.loading-spinner');
+
+    // Show loading spinner
+    loadingSpinner.classList.remove('hide');
+
+    // Remove the current car model from the scene if it exists
+    if (carModel) {
+        scene.remove(carModel);
+    }
+
+    // Load the new model from the given path
+    loader.load(modelPath, (gltf) => {
+        carModel = gltf.scene;
+        scene.add(carModel);
+
+        // Reset position and scale
+        carModel.position.set(0, 0, 0);
+
+        // Retrieve the model rotation from modelMap based on modelPath
+        const selectedModel = Object.values(modelMap).find(model => model.modelPath === modelPath);
+        if (selectedModel && selectedModel.modelRotation !== undefined) {
+            initialModelRotation = selectedModel.modelRotation; // Store the initial rotation
+            carModel.rotation.y = initialModelRotation; // Set the initial rotation
+        }
+
+        // Center and reset the model
+        const boundingBox = new THREE.Box3().setFromObject(carModel);
+        const center = boundingBox.getCenter(new THREE.Vector3());
+        carModel.position.sub(center);
+
+        // carModel.position.y = -1;
+
+        // Create and add a bounding box helper
+        // const boxHelper = new THREE.Box3Helper(boundingBox, new THREE.Color(0xff0000)); 
+        // scene.add(boxHelper);
+
+
+        const size = boundingBox.getSize(new THREE.Vector3());
+        const maxDimension = Math.max(size.x, size.y, size.z);
+
+        const cameraDistance = maxDimension * 0.91;
+        camera.position.set(0, cameraDistance / 2, cameraDistance);
+        camera.lookAt(center);
+
+        controls.target.copy(center);  // OrbitControls should target the center of the model
+        controls.update();
+
+        // Hide loading spinner
+        loadingSpinner.classList.add('hide');
+    }, undefined, (error) => {
+        console.error('An error occurred while loading the model:', error);
+        loadingSpinner.classList.add('hide');
+    });
+
+
+}
+
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
@@ -302,7 +319,7 @@ animate();
 
 // ? for landscape prompt
 
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     screenSize();
 });
 
@@ -334,23 +351,30 @@ window.addEventListener('resize', () => {
     renderer.render(scene, camera);  // Ensure it renders properly after resizing
 });
 
+
+renderer.domElement.addEventListener('pointermove', () => {
+    didModelMove = true
+});
+
 function resetOrbitRotation() {
     // Compute the bounding box and center the model
     const boundingBox = new THREE.Box3().setFromObject(carModel);
     const center = boundingBox.getCenter(new THREE.Vector3());
-    
+
     // Explicitly center the car model based on its bounding box
     carModel.position.sub(center);
+    // carModel.position.y = -1;
 
     // Calculate the size of the bounding box (model size)
     const size = boundingBox.getSize(new THREE.Vector3());
     const maxDimension = Math.max(size.x, size.y, size.z);
 
     // Set the camera distance proportional to the model's size
-    const cameraDistance = maxDimension * 0.7;
+    const cameraDistance = maxDimension * 0.91;
     camera.position.set(0, cameraDistance / 2, cameraDistance); // Reset X and Y
 
     // Ensure the camera looks at the center of the model
+    // controls.target.copy(center);
     camera.lookAt(center);
 
     controls.update(); // Apply the camera changes
@@ -390,6 +414,7 @@ function centerCarModel() {
     const boundingBox = new THREE.Box3().setFromObject(carModel);
     const center = boundingBox.getCenter(new THREE.Vector3());
     carModel.position.sub(center);
+    // carModel.position.y = -1;
 }
 
 // Tabs logic
@@ -447,7 +472,3 @@ tabs.forEach(tab => {
 });
 
 
-renderer.domElement.addEventListener('pointermove', () => {
-    didModelMove = true
-
-});
