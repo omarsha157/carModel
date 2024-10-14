@@ -326,7 +326,13 @@ animate();
 
 // ? for landscape prompt
 
-screenSize();
+
+
+
+window.addEventListener('load', function() {
+    screenSize();
+});
+
 function screenSize() {
     let screenHeight = window.innerHeight;
     let screenWidth = window.innerWidth;
@@ -334,11 +340,10 @@ function screenSize() {
     if (screenHeight > screenWidth) {
         landscapePrompt.style.display = 'block';
         mainWrapper.style.display = 'none';
+        return
     } else {
         landscapePrompt.style.display = 'none';
         mainWrapper.style.display = 'block';
-
-
 
         // Force re-render to ensure the model is visible immediately
         renderer.render(scene, camera);
@@ -351,6 +356,7 @@ function screenSize() {
 }
 
 window.addEventListener('resize', () => {
+    // location.reload();
     screenSize();
 
     renderer.render(scene, camera);  // Ensure it renders properly after resizing
