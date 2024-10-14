@@ -7,6 +7,10 @@ const cards = document.querySelectorAll('.card');
 let landscapePrompt = document.querySelector('.landscape-modal');
 let mainWrapper = document.querySelector('.main-wrapper');
 
+
+let cameraWidth = 0;  
+let cameraHeight = 0; 
+
 let activeTab = 'front'
 
 let frontImg = ''
@@ -72,6 +76,13 @@ function startVideoStream() {
     }).then((stream) => {
         videoStream = stream;
         videoElement.srcObject = stream;
+
+        // Once the metadata is loaded, get the video resolution
+        videoElement.addEventListener('loadedmetadata', () => {
+            cameraWidth = videoElement.videoWidth;
+            cameraHeight = videoElement.videoHeight;
+            console.log('Camera resolution:', cameraWidth, 'x', cameraHeight); // Log the resolution for confirmation
+        });
     }).catch((error) => {
         console.error('Fallback error accessing camera:', error);
 
@@ -80,6 +91,13 @@ function startVideoStream() {
         }).then((stream) => {
             videoStream = stream;
             videoElement.srcObject = stream;
+
+            // Get the video resolution
+            videoElement.addEventListener('loadedmetadata', () => {
+                cameraWidth = videoElement.videoWidth;
+                cameraHeight = videoElement.videoHeight;
+                console.log('Camera resolution:', cameraWidth, 'x', cameraHeight); // Log the resolution for confirmation
+            });
         }).catch((error) => {
             console.error('Error accessing camera:', error);
         });
@@ -159,64 +177,6 @@ function retake() {
 }
 
 
-// function loadCarModel(modelPath) {
-//     const loadingSpinner = document.querySelector('.loading-spinner');
-
-//     // Show loading spinner
-//     loadingSpinner.classList.remove('hide');
-
-//     // Remove the current car model from the scene if it exists
-//     if (carModel) {
-//         scene.remove(carModel);
-//     }
-
-//     // Load the new model from the given path
-//     loader.load(modelPath, (gltf) => {
-//         carModel = gltf.scene;
-//         scene.add(carModel);
-
-//         // Reset position and scale
-//         carModel.position.set(0, 0, 0);
-
-//         // Retrieve the model rotation from modelMap based on modelPath
-//         const selectedModel = Object.values(modelMap).find(model => model.modelPath === modelPath);
-//         if (selectedModel && selectedModel.modelRotation !== undefined) {
-//             carModel.rotation.y = selectedModel.modelRotation;
-//         }
-
-
-//         // Compute the bounding box and center the model
-//         const boundingBox = new THREE.Box3().setFromObject(carModel);
-//         const center = boundingBox.getCenter(new THREE.Vector3());
-//         carModel.position.sub(center);
-
-//         // Visualize the bounding box using BoxHelper
-//         // const boxHelper = new THREE.BoxHelper(carModel, 0xffff00);
-//         // scene.add(boxHelper);
-
-//         // Calculate the size of the bounding box (model size)
-//         const size = boundingBox.getSize(new THREE.Vector3());
-//         const maxDimension = Math.max(size.x, size.y, size.z);
-
-//         // Set the camera distance proportional to the model's size
-//         const cameraDistance = maxDimension * 0.8;
-//         camera.position.set(0, cameraDistance / 2, cameraDistance);
-
-//         // Ensure the camera looks at the center of the model
-//         // camera.lookAt(carModel.position);
-//         camera.lookAt(center);
-
-//         // Hide loading spinner after the model is fully loaded
-//         loadingSpinner.classList.add('hide');
-
-//     }, undefined, (error) => {
-//         console.error('An error occurred while loading the model:', error);
-
-//         // Hide loading spinner even if there's an error
-//         loadingSpinner.classList.add('hide');
-//     });
-// }
-
 
 // Global variable to store the initial rotation of the loaded model
 let initialModelRotation = 0;
@@ -256,7 +216,7 @@ function loadCarModel(modelPath) {
         const size = boundingBox.getSize(new THREE.Vector3());
         const maxDimension = Math.max(size.x, size.y, size.z);
 
-        const cameraDistance = maxDimension * 0.8;
+        const cameraDistance = maxDimension * 0.7;
         camera.position.set(0, cameraDistance / 2, cameraDistance);
         camera.lookAt(center);
 
@@ -326,9 +286,6 @@ animate();
 
 // ? for landscape prompt
 
-
-
-
 window.addEventListener('load', function() {
     screenSize();
 });
@@ -340,7 +297,6 @@ function screenSize() {
     if (screenHeight > screenWidth) {
         landscapePrompt.style.display = 'block';
         mainWrapper.style.display = 'none';
-        return
     } else {
         landscapePrompt.style.display = 'none';
         mainWrapper.style.display = 'block';
@@ -375,7 +331,7 @@ function resetOrbitRotation() {
     const maxDimension = Math.max(size.x, size.y, size.z);
 
     // Set the camera distance proportional to the model's size
-    const cameraDistance = maxDimension * 0.8;
+    const cameraDistance = maxDimension * 0.7;
     camera.position.set(0, cameraDistance / 2, cameraDistance); // Reset X and Y
 
     // Ensure the camera looks at the center of the model
